@@ -4,7 +4,9 @@
 
 ### New Features and Major Changes
 
-* 
+* Add the `Support Vector Machines` example, which runs SMS++ and scikit-learn side by side on the same train/test split, k-fold cross-validation and grid of hyper-parameters
+
+* Add support for the SVCBlock and the SVRBlock, i.e., the training problem of a Support Vector Machine, with the `SVMSolver` tool, the configuration templates of the `SVMBlock` folder and the model selection the tool performs (hold-out, k-fold cross-validation and grid search).
 
 ### Minor Changes and Bug Fixes
 

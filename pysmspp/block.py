@@ -6,6 +6,7 @@ from pysmspp.smspp_tools import (
     InvestmentBlockSolver,
     InvestmentSolver,
     TSSBSolver,
+    SVMSolver,
 )
 from enum import IntEnum
 
@@ -1453,7 +1454,8 @@ class SMSNetwork(Block):
             If string value is passed, the supported values are:
 
             - "auto": Automatically select the optimization mode by the type of the inner block.
-              If UCBlock, then it selects UCBlockSolver.
+              If UCBlock, then it selects UCBlockSolver; if SVCBlock or SVRBlock, then it
+              selects SVMSolver.
             - "UCBlockSolver": Use the UCBlockSolver tool.
 
         inner_block_name : str (default: "Block_0")
@@ -1472,6 +1474,8 @@ class SMSNetwork(Block):
             "InvestmentBlock": "InvestmentBlockSolver",
             "SDDPBlock": "InvestmentSolver",
             "TwoStageStochasticBlock": "TSSBSolver",
+            "SVCBlock": "SVMSolver",
+            "SVRBlock": "SVMSolver",
         }
 
         # Map solver names to actual solver classes
@@ -1481,6 +1485,7 @@ class SMSNetwork(Block):
             "InvestmentBlockSolver": InvestmentBlockSolver,
             "InvestmentSolver": InvestmentSolver,
             "TSSBSolver": TSSBSolver,
+            "SVMSolver": SVMSolver,
         }
 
         if isinstance(smspp_solver, str) and smspp_solver == "auto":

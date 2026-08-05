@@ -56,5 +56,6 @@ from pysmspp.smspp_tools import (
     InvestmentBlockTestSolver as InvestmentBlockTestSolver,
     InvestmentBlockSolver as InvestmentBlockSolver,
     TSSBSolver as TSSBSolver,
+    SVMSolver as SVMSolver,
     is_smspp_installed as is_smspp_installed,
 )

@@ -51,6 +51,7 @@ docs=[
     "mkdocs-jupyter>=0.24",
     "mkdocs-autorefs>=0.5",
     "pymdown-extensions>=10.0",
+    "scikit-learn",  # the SVM example compares SMS++ with scikit-learn
 ]
 
 [tool.setuptools]
