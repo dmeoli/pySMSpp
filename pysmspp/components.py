@@ -1,5 +1,5 @@
-from typing import Any
 import re
+from typing import Any
 
 
 class Dict(dict):
@@ -61,9 +61,8 @@ class Dict(dict):
         """
         dict_keys = []
         for k in self.keys():
-            if isinstance(k, str):
-                if m := self._re_pattern.match(k):
-                    dict_keys.append(m.string)
+            if isinstance(k, str) and (m := self._re_pattern.match(k)):
+                dict_keys.append(m.string)
 
         obj_attrs = list(dir(Dict))
 

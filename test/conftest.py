@@ -1,8 +1,10 @@
-from pysmspp import SMSFileType, SMSNetwork, Block, Variable, Dimension, Attribute
 import os
 import re
+
 import numpy as np
 import pytest
+
+from pysmspp import Attribute, Block, Dimension, SMSFileType, SMSNetwork, Variable
 
 
 def pytest_addoption(parser):
@@ -40,7 +42,7 @@ def get_temp_file(fname):
     return os.path.join(get_temp_folder(), fname)
 
 
-def check_compare_nc(fp_n1, fp_n2, fp_log=get_temp_file("tmp.txt")):
+def check_compare_nc(fp_n1, fp_n2, fp_log=None):
     """
     Utility function to compare two netCDF files and check if they are the same.
 
@@ -53,6 +55,8 @@ def check_compare_nc(fp_n1, fp_n2, fp_log=get_temp_file("tmp.txt")):
     fp_log : str (optional)
         File path to the log file.
     """
+    if fp_log is None:
+        fp_log = get_temp_file("tmp.txt")
     os.system(
         f"ncompare {fp_n1} {fp_n2} --only-diffs --show-attributes --file-text {fp_log}"
     )
@@ -117,20 +121,18 @@ def add_base_ucblock(
     if n_lines > 0:
         kwargs = {
             **kwargs,
-            **{
-                "StartLine": Variable(
-                    "StartLine", "int", ("NumberLines",), list(range(n_lines))
-                ),
-                "EndLine": Variable(
-                    "EndLine", "int", ("NumberLines",), list(range(1, n_lines + 1))
-                ),
-                "MinPowerFlow": Variable(
-                    "MinPowerFlow", "float", ("NumberLines",), [0.0] * n_lines
-                ),
-                "MaxPowerFlow": Variable(
-                    "MaxPowerFlow", "float", ("NumberLines",), [max_p] * n_lines
-                ),
-            },
+            "StartLine": Variable(
+                "StartLine", "int", ("NumberLines",), list(range(n_lines))
+            ),
+            "EndLine": Variable(
+                "EndLine", "int", ("NumberLines",), list(range(1, n_lines + 1))
+            ),
+            "MinPowerFlow": Variable(
+                "MinPowerFlow", "float", ("NumberLines",), [0.0] * n_lines
+            ),
+            "MaxPowerFlow": Variable(
+                "MaxPowerFlow", "float", ("NumberLines",), [max_p] * n_lines
+            ),
         }
     if n_elec_generators > 0:
         kwargs["GeneratorNode"] = Variable(
