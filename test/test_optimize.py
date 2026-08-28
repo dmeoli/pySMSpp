@@ -1,28 +1,30 @@
 import os
 import shutil
 from pathlib import Path
-from pysmspp import (
-    SMSConfig,
-    SMSNetwork,
-    SMSFileType,
-    UCBlockSolver,
-    InvestmentBlockSolver,
-)
+
+import numpy as np
+import pytest
 from conftest import (
-    get_network,
     add_base_ucblock,
-    add_ucblock_with_one_unit,
-    add_tub_to_ucblock,
     add_bub_to_ucblock,
     add_hub_to_ucblock,
     add_iub_to_ucblock,
     add_sub_to_ucblock,
-    build_tssb_block,
+    add_tub_to_ucblock,
+    add_ucblock_with_one_unit,
     build_svm_network,
+    build_tssb_block,
+    get_network,
     get_temp_file,
 )
-import pytest
-import numpy as np
+
+from pysmspp import (
+    InvestmentBlockSolver,
+    SMSConfig,
+    SMSFileType,
+    SMSNetwork,
+    UCBlockSolver,
+)
 
 RTOL = 1e-4
 ATOL = 1e-2
@@ -191,7 +193,7 @@ def test_investmentsolvertest(force_smspp):
 
 def test_is_smspp_installed(force_smspp):
     """Test the is_smspp_installed() function."""
-    from pysmspp import is_smspp_installed, UCBlockSolver, InvestmentBlockSolver
+    from pysmspp import InvestmentBlockSolver, UCBlockSolver, is_smspp_installed
 
     # The function should return a boolean
     result = is_smspp_installed()
@@ -253,9 +255,7 @@ def test_optimize_tssbsolver(force_smspp):
         obj_orig = tssb_solver.objective_value
         obj_new = tssb_solver_new.objective_value
         assert obj_orig == pytest.approx(obj_new, rel=1e-4), (
-            "Objective values should match between original ({:.2f}) and new ({:.2f}) TSSB blocks".format(
-                obj_orig, obj_new
-            )
+            f"Objective values should match between original ({obj_orig:.2f}) and new ({obj_new:.2f}) TSSB blocks"
         )
     else:
         pytest.skip("TSSBBlockSolver not available in PATH")
@@ -353,8 +353,8 @@ def test_optimize_svmblock_formulations(force_smspp):
     reference = values["dual/SMO"]
     for name, value in values.items():
         assert value == pytest.approx(reference, rel=1e-4), (
-            "the value of the training problem of {} ({:.6f}) differs from the "
-            "one of dual/SMO ({:.6f})".format(name, value, reference)
+            f"the value of the training problem of {name} ({value:.6f}) differs from the "
+            f"one of dual/SMO ({reference:.6f})"
         )
 
 
@@ -460,3 +460,24 @@ def test_svmsolver_trained_model(force_smspp):
     assert 0 < support < n_samples  # some samples support the model, not all
 
     assert np.isfinite(model.variables["Bias"].data)
+
+
+def test_optimize_sddp(force_smspp):
+    fp_network = get_network("sddp/SDDPBlock.nc4")
+    fp_log = get_temp_file("test_optimize_sddp.txt")
+    configfile = SMSConfig(template="SDDPBlock/SDDPSCfg.txt")
+
+    from pysmspp import SDDPSolver
+
+    sddp_solver = SDDPSolver(
+        fp_network=fp_network,
+        fp_log=fp_log,
+        configfile=str(configfile),
+    )
+
+    if sddp_solver.is_available() or force_smspp:
+        sddp_solver.optimize(logging=True)
+
+        assert "success" in sddp_solver.status.lower()
+    else:
+        pytest.skip("SDDPSolver not available in PATH")

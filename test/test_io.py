@@ -1,8 +1,10 @@
-from conftest import get_network, check_compare_nc, build_svm_network
-import pysmspp
 import os
+
 import numpy as np
 import pytest
+from conftest import build_svm_network, check_compare_nc, get_network
+
+import pysmspp
 
 
 def test_load_save_network():

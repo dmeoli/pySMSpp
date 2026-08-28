@@ -1,22 +1,23 @@
-from pysmspp.components import Dict
-from pysmspp.smspp_tools import (
-    SMSPPSolverTool,
-    UCBlockSolver,
-    InvestmentBlockTestSolver,
-    InvestmentBlockSolver,
-    InvestmentSolver,
-    TSSBSolver,
-    SVMSolver,
-)
+import os
+import warnings
 from enum import IntEnum
+from pathlib import Path
 
 import netCDF4 as nc
 import numpy as np
-import os
-from pathlib import Path
 import pandas as pd
-import warnings
 
+from pysmspp.components import Dict
+from pysmspp.smspp_tools import (
+    InvestmentBlockSolver,
+    InvestmentBlockTestSolver,
+    InvestmentSolver,
+    SDDPSolver,
+    SMSPPSolverTool,
+    SVMSolver,
+    TSSBSolver,
+    UCBlockSolver,
+)
 
 NC_DOUBLE = "f8"
 NP_DOUBLE = np.float64
@@ -72,7 +73,7 @@ class SMSConfig:
     SMSNetwork.optimize : Uses SMSConfig for optimization
     """
 
-    def __init__(self, fp: Path | str = None, template: str = None):
+    def __init__(self, fp: Path | str | None = None, template: str | None = None):
         """
         Initialize a SMSConfig object.
         If an existing fp is provided, it is used as the configuration file; an error is thrown if the file does not exist.
@@ -138,7 +139,7 @@ class SMSConfig:
 
 
 def get_attr_field(
-    block_type: str, attr_name: str, attr_value=None, col_name: str = None
+    block_type: str, attr_name: str, attr_value=None, col_name: str | None = None
 ):
     """
     Return the entry or the entire attribute row (pandas.Series) from block configuration.
@@ -198,10 +199,21 @@ def get_attr_field(
 
     if attr_name in simple_attrs.index:
         attr = attr_name
+    elif attr_name in block_attrs.index:
+        # Prefer an exact group name over wildcard prefixes. For example,
+        # ``StochasticBlock`` must not be confused with ``StochasticBlock_*``.
+        attr = attr_name
     else:
         attr_sel = block_attrs.loc[
             block_attrs.index.to_series().map(lambda x: attr_name.startswith(x))
         ]
+        if attr_sel.shape[0] > 1:
+            # Wildcard markers are stripped when the CSV files are loaded.
+            # Choosing the longest matching prefix makes the most specific
+            # wildcard deterministic (``StochasticBlock_`` wins over
+            # ``StochasticBlock`` for ``StochasticBlock_0``).
+            prefix_length = attr_sel.index.to_series().str.len()
+            attr_sel = attr_sel.loc[prefix_length == prefix_length.max()]
         if attr_sel.shape[0] == 1:
             attr = attr_sel.index[0]
         elif attr_sel.empty:
@@ -284,7 +296,7 @@ class Attribute:
     name: str
     value: str | int | float
 
-    def __init__(self, name: str, value: str | int | float):
+    def __init__(self, name: str, value: str | float):
         """
         Initialize an Attribute object.
 
@@ -678,13 +690,11 @@ class Block:
         return self._blocks
 
     @property
-    def block_type(self, ignore_missing: bool = True) -> str:
+    def block_type(self) -> str:
         """Return the type of the block."""
         if "type" in self.attributes:
             return self.attributes["type"].value
-        elif ignore_missing:
-            return None
-        raise AttributeError("Block type not defined.")
+        return None
 
     @block_type.setter
     def block_type(self, block_type: str):
@@ -1032,7 +1042,7 @@ class Block:
 
     def print_tree(
         self,
-        name: str = None,
+        name: str | None = None,
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
@@ -1160,7 +1170,9 @@ class Block:
                     False,
                 )
 
-    def plot(self, variables: list = None, figsize: tuple = None, **kwargs):
+    def plot(
+        self, variables: list | None = None, figsize: tuple | None = None, **kwargs
+    ):
         """
         Plot variables of the block.
 
@@ -1363,7 +1375,7 @@ class SMSNetwork(Block):
 
     def print_tree(
         self,
-        name: str = None,
+        name: str | None = None,
         show_dimensions: bool = False,
         show_variables: bool = False,
         show_attributes: bool = False,
@@ -1428,8 +1440,8 @@ class SMSNetwork(Block):
         self,
         configfile: SMSConfig | Path | str,
         fp_temp: Path | str = "temp.nc",
-        fp_log: Path | str = None,
-        fp_solution: Path | str = None,
+        fp_log: Path | str | None = None,
+        fp_solution: Path | str | None = None,
         smspp_solver: SMSPPSolverTool | str = "auto",
         inner_block_name: str = "Block_0",
         logging=True,
@@ -1472,8 +1484,8 @@ class SMSNetwork(Block):
         default_solver_map = {
             "UCBlock": "UCBlockSolver",
             "InvestmentBlock": "InvestmentBlockSolver",
-            "SDDPBlock": "InvestmentSolver",
             "TwoStageStochasticBlock": "TSSBSolver",
+            "SDDPBlock": "SDDPSolver",
             "SVCBlock": "SVMSolver",
             "SVRBlock": "SVMSolver",
         }
@@ -1485,6 +1497,7 @@ class SMSNetwork(Block):
             "InvestmentBlockSolver": InvestmentBlockSolver,
             "InvestmentSolver": InvestmentSolver,
             "TSSBSolver": TSSBSolver,
+            "SDDPSolver": SDDPSolver,
             "SVMSolver": SVMSolver,
         }
 
