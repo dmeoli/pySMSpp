@@ -320,8 +320,9 @@ def test_optimize_svmblock_formulations(force_smspp):
     """
     The training problem has the same value in every formulation and with
     every Solver: the Wolfe dual and the primal solved by a :MILPSolver, the
-    dual solved by the ad hoc SMOSolver, and the consensus rewriting of the
-    problem in chunks solved by a LagrangianDualSolver.
+    dual solved by the ad hoc SMOSolver, the consensus structure of the
+    problem in chunks solved by a LagrangianDualSolver, and LIBSVM, which is
+    only in the Solver factory when SVMBlock has been built with it.
     """
     from pysmspp import SVMSolver
 
@@ -336,6 +337,7 @@ def test_optimize_svmblock_formulations(force_smspp):
         "dual/MILP": ("SVMBlock/SVMSCfg_grb.txt", {}),
         "primal/MILP": ("SVMBlock/SVMSCfg_grb.txt", {"B": "SVMCfg-primal.txt"}),
         "chunks/LD": ("SVMBlock/SVMSCfg-LD.txt", {"s": 4}),
+        "dual/LIBSVM": ("SVMBlock/SVMSCfg-libsvm.txt", {}),
     }
 
     values = {}
@@ -346,6 +348,11 @@ def test_optimize_svmblock_formulations(force_smspp):
             **kwargs,
         )
         svm.optimize(logging=False)
+
+        if name == "dual/LIBSVM" and "Success" not in svm.status:
+            # LIBSVMSolver is only in the Solver factory when SVMBlock has
+            # been built with LIBSVM, which is an optional dependency
+            continue
 
         assert "Success" in svm.status
         values[name] = svm.objective_value

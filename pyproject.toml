@@ -52,6 +52,7 @@ docs=[
     "mkdocs-autorefs>=0.5",
     "pymdown-extensions>=10.0",
     "scikit-learn",  # the SVM example compares SMS++ with scikit-learn
+    "libsvm-official",  # ... and with LIBSVM itself, which is what both use
 ]
 
 [tool.setuptools]

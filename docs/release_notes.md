@@ -6,7 +6,7 @@
 
 * Add the `Support Vector Machines` example, which runs SMS++ and scikit-learn side by side on the same train/test split, k-fold cross-validation and grid of hyper-parameters
 
-* Add support for the SVCBlock and the SVRBlock, i.e., the training problem of a Support Vector Machine, with the `SVMSolver` tool, the configuration templates of the `SVMBlock` folder and the model selection the tool performs (hold-out, k-fold cross-validation and grid search).
+* Add support for the SVCBlock and the SVRBlock, i.e., the training problem of a Support Vector Machine, with the `SVMSolver` tool, the configuration templates of the `SVMBlock` folder and the model selection the tool performs (hold-out, k-fold cross-validation and grid search). The templates include `SVMSCfg-libsvm.txt`, which trains the model with LIBSVM: the example compares it with `libsvm-official` and with scikit-learn, i.e., the same library called from Python.
 
 * Mirror the repository to its GitLab copy, `smspp/pysmspp`, at every push on `main`: SMS++ lives on GitLab and mirrors itself to GitHub, pySMSpp is the one going the other way round.
 
