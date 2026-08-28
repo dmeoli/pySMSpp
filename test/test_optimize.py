@@ -272,7 +272,7 @@ def test_help_svmsolver(force_smspp):
         pytest.skip("SVMSolver not available in PATH")
 
 
-def test_optimize_svcblock(force_smspp):
+def test_optimize_svmblock_classification(force_smspp):
     """
     Train a SVCBlock with the ad hoc SMOSolver.
     """
@@ -294,7 +294,7 @@ def test_optimize_svcblock(force_smspp):
         pytest.skip("SVMSolver not available in PATH")
 
 
-def test_optimize_svrblock(force_smspp):
+def test_optimize_svmblock_regression(force_smspp):
     """
     Train a SVRBlock with the ad hoc SMOSolver.
     """
