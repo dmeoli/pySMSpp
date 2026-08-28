@@ -10,7 +10,7 @@
 
 ### Minor Changes and Bug Fixes
 
-* Update the TwoStageStochasticBlock `BlockConfig` to the current format: SMS++ now reads a version number after the differential flag and the structure `Configuration` first, so the shipped file was rejected, with the `-B` option silently having no effect.
+* Update the shipped `BlockConfig` files to the current format: SMS++ now reads a version number after the differential flag and the structure `Configuration` first, so the shipped file was rejected, with the `-B` option silently having no effect.
 
 
 ## Version v0.0.13
