@@ -766,8 +766,9 @@ class SVMSolver(SMSPPSolverTool):
     problem, and optionally performs the model selection that surrounds it:
     the option "x" holds out a fraction of the samples, "k" runs a k-fold
     cross-validation, "g" compares the hyper-parameters of a grid, and "s"
-    rewrites the training problem as the given number of chunks tied by
-    consensus constraints, which is what a Lagrangian Solver attacks.
+    gives the training problem the consensus structure, i.e., the given
+    number of chunks tied by consensus constraints, which is what a
+    Lagrangian Solver attacks.
 
     Which formulation of the training problem the abstract representation
     encodes is not part of the data, it is what the BlockConfig says: it is
