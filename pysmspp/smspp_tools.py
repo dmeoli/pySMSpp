@@ -352,7 +352,7 @@ class SMSPPSolverTool:
                 [self._solver_path, self._help_option],
                 check=False,
                 shell=self._shell,
-                capture_output=True,  # the help message is not what is asked for here
+                capture_output=True,
             )
             return proc.returncode == 0
         except FileNotFoundError:
