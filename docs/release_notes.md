@@ -10,6 +10,8 @@
 
 ### Minor Changes and Bug Fixes
 
+* Write the configuration templates that use the BundleSolver for the BundleSolver 2.0, whose master problem is a Block solved by a Solver of its own, configured by the `MPBCfg.txt` now shipped in each of those folders; the parameters of the master of the BundleSolver 1.0 are gone. See [PR #116](https://github.com/SPSUnipi/pySMSpp/pull/116)
+
 * Update the shipped `BlockConfig` files to the current format: SMS++ now reads a version number after the differential flag and the structure `Configuration` first, so the shipped file was rejected, with the `-B` option silently having no effect. See [PR #110](https://github.com/SPSUnipi/pySMSpp/pull/110)
 
 * Specify local directory when running solvers through `SMSPPSolverTool`: the current working directory is now set to the network directory. See [PR #112](https://github.com/SPSUnipi/pySMSpp/pull/112)
